@@ -37,7 +37,7 @@ class _AllImagesScreen extends State<AllImagesScreen> {
                 (item) => InkWell(
                   onTap: () {},
                   child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                     child: Stack(
                       children: <Widget>[
                         Image.network(

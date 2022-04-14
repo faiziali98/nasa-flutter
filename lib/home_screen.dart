@@ -284,7 +284,7 @@ class _MainScreenState extends State<MainScreen> {
                         height: 16,
                       ),
                       const Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.symmetric(horizontal: 12.0),
                         child: Text(
                           "This new selfie was created using a specialised pupil imaging lens inside the James Webb Space Telescope (Webb's) Near-Infrared Camera (NIRCam), designed to take images of the primary mirror segments instead of images of the sky. This configuration is not used during scientific operations and is used strictly for engineering and alignment purposes. In this image, all of Webb’s 18 primary mirror segments are shown collecting light from the same star in unison.",
                           textAlign: TextAlign.start,
