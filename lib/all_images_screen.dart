@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mysample/utils.dart';
 
+import 'image_full_screen.dart';
+
 class AllImagesScreen extends StatefulWidget {
   final savedUrls;
   const AllImagesScreen({
@@ -35,7 +37,15 @@ class _AllImagesScreen extends State<AllImagesScreen> {
           children: widget.savedUrls
               .map<Widget>(
                 (item) => InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ImageFullScreenWidget(
+                          url: item,
+                        ),
+                      ),
+                    );
+                  },
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                     child: Stack(

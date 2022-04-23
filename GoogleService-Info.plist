@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>495989117325-sj77l51qh5sd3fpq7kes81milaod9066.apps.googleusercontent.com</string>
+	<string>583265588703-iarahb3p9pjf952i5bos1q1tpv5d5hnn.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.495989117325-sj77l51qh5sd3fpq7kes81milaod9066</string>
+	<string>com.googleusercontent.apps.583265588703-iarahb3p9pjf952i5bos1q1tpv5d5hnn</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAasV1BM9q0S6Lio3K9dMqF_bIP20jqYNs</string>
+	<string>AIzaSyB-O3AFdN6LQSWmU2wgvlgNPRWBJl_z-aI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>495989117325</string>
+	<string>583265588703</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.mysample</string>
+	<string>com.dovi.jwst</string>
 	<key>PROJECT_ID</key>
-	<string>nasa-image-c2330</string>
+	<string>jwst-7a859</string>
 	<key>STORAGE_BUCKET</key>
-	<string>nasa-image-c2330.appspot.com</string>
+	<string>jwst-7a859.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:495989117325:ios:8698e135179d44cc65edc4</string>
+	<string>1:583265588703:ios:4184bc2b270b703cada06a</string>
 </dict>
 </plist>

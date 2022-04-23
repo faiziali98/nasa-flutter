@@ -21,28 +21,11 @@ class _ImageFullScreenWidget extends State<ImageFullScreenWidget> {
     required this.url,
   });
 
-  Widget _imageWidget() {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          showTop = !showTop;
-        });
-      },
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.black,
-        ),
-        child: PhotoView(
-          imageProvider: NetworkImage(url),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    List<String> urlSplit = url.split('.');
+    String extension = urlSplit.removeLast();
+    String imageUrl = '${urlSplit.join('.')}_b.${extension}';
     return Scaffold(
       appBar: AppBar(
         title: const Text('AppBar Demo'),
@@ -50,7 +33,30 @@ class _ImageFullScreenWidget extends State<ImageFullScreenWidget> {
         backgroundColor: Colors.black,
       ),
       body: Stack(children: [
-        _imageWidget(),
+        InkWell(
+          onTap: () {
+            setState(() {
+              showTop = !showTop;
+            });
+          },
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              color: Colors.black,
+            ),
+            child: imageUrl == ''
+                ? Container()
+                : PhotoView(
+                    loadingBuilder: (context, loadingProgress) {
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Text('Some errors occurred!'),
+                    imageProvider: NetworkImage(imageUrl),
+                  ),
+          ),
+        ),
         AnimatedOpacity(
           opacity: showTop ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 300),

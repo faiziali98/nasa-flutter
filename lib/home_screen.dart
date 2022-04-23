@@ -23,9 +23,11 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   String url = '';
+  String title = '';
   bool showMenu = false;
   FToast fToast = FToast();
   List<dynamic> savedUrls = [];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final storage = const FlutterSecureStorage();
 
@@ -46,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     fToast.init(context);
     initStore();
-    requestPermission();
+    // requestPermission();
   }
 
   _asyncMethod() async {
@@ -56,8 +58,11 @@ class _MainScreenState extends State<MainScreen> {
       toastDuration: Duration(seconds: 2),
     );
 
+    List<String> urlSplit = url.split('.');
+    String extension = urlSplit.removeLast();
+
     var response = await Dio().get(
-      url,
+      '${urlSplit.join('.')}_b.${extension}',
       options: Options(responseType: ResponseType.bytes),
     );
     final result = await ImageGallerySaver.saveImage(
@@ -84,33 +89,60 @@ class _MainScreenState extends State<MainScreen> {
             enlargeCenterPage: true,
             initialPage: 2,
           ),
-          items: images
-              .map<Widget>(
-                (item) => InkWell(
-                  onTap: () {
-                    setState(() {
-                      if (showMenu == true) {
-                        showMenu = false;
-                      } else {
-                        url = item;
-                      }
-                    });
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                    child: Stack(
-                      children: <Widget>[
-                        Image.network(
-                          item,
-                          fit: BoxFit.cover,
-                          width: 400.0,
-                        ),
-                      ],
+          items: images.map<Widget>((item) {
+            final splitValues = item.split('t1t11e');
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  if (showMenu == true) {
+                    showMenu = false;
+                  } else {
+                    url = splitValues[1];
+                    title = splitValues[0];
+                  }
+                });
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                child: Stack(
+                  children: <Widget>[
+                    Image.network(
+                      splitValues[1],
+                      fit: BoxFit.cover,
+                      width: 400.0,
                     ),
-                  ),
+                    Positioned(
+                      bottom: 0.0,
+                      left: 0.0,
+                      right: 0.0,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color.fromARGB(200, 0, 0, 0),
+                              Color.fromARGB(0, 0, 0, 0)
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 20.0),
+                        child: Text(
+                          splitValues[0],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              )
-              .toList(),
+              ),
+            );
+          }).toList(),
         ),
       ),
     ]);
@@ -178,32 +210,6 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
-            // InkWell(
-            //   onTap: () {},
-            //   child: Padding(
-            //     padding: const EdgeInsets.all(16.0),
-            //     child: Row(
-            //       children: [
-            //         const Icon(
-            //           Icons.image,
-            //           color: Colors.white,
-            //         ),
-            //         Container(
-            //           width: 8,
-            //         ),
-            //         Text(
-            //           "All Images",
-            //           textAlign: TextAlign.center,
-            //           style: TextStyle(
-            //             fontSize: showMenu ? 20 : 0,
-            //             fontWeight: FontWeight.w600,
-            //             color: Colors.white,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
             InkWell(
               onTap: () {
                 Navigator.of(context).push(
@@ -271,10 +277,10 @@ class _MainScreenState extends State<MainScreen> {
                       Container(
                         height: 16,
                       ),
-                      const Text(
-                        "Webb reaches alignment milestone (selfie)",
+                      Text(
+                        title,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
@@ -375,6 +381,7 @@ class _MainScreenState extends State<MainScreen> {
     ];
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
