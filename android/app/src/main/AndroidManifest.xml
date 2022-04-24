@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dovi.jwst">
    <application
-        android:label="mysample"
+        android:label="JWST"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

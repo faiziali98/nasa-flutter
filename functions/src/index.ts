@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
-import * as admin from "firebase-admin";
-import { initializeApp, deleteApp } from 'firebase/app';
+import * as admin from 'firebase-admin';
+import { initializeApp } from 'firebase/app';
 import { doc, setDoc, getFirestore, getDoc } from 'firebase/firestore';
 
 const Flickr = require('flickr-sdk');
@@ -23,43 +23,33 @@ exports.scheduledFunction = functions.pubsub
 
     var flickr = new Flickr('3afb5a0a0a71a40b46a44d573425d3db');
 
-    var count = 0;
-    var deleted = false;
-
     flickr.photosets
       .getList({ user_id: '50785054@N03' })
       .then((res: { body: { photosets: { photoset: any } } }) => {
         const photosets = res.body.photosets.photoset;
 
-        photosets.slice(0, 2).forEach(async (photoset: any) => {
+        photosets.slice(1, 3).forEach(async (photoset: any) => {
           const title = photoset.title._content;
           const id = photoset.id;
           const urls: string[] = [];
 
-          console.log(id);
-
           var docSnap = null;
-
           try {
             const docRef = doc(database, 'images', title);
             docSnap = await getDoc(docRef);
-          } catch (rtt) {
-            console.log('err');
+          } catch (err) {
+            console.log('err', err);
           }
 
-          if (docSnap?.exists()) {
-            if (!deleted) {
-              deleted = true;
-              deleteApp(app).catch((err) => {
-                console.log(err);
-              });
-            }
-            return;
-          } else {
+          if (!docSnap?.exists()) {
+            console.log(`Working with Photoset ${id}`);
+
             flickr.photosets
               .getPhotos({ photoset_id: id, user_id: '50785054@N03' })
               .then((res: { body: { photoset: { photo: any } } }) => {
                 const photos = res.body.photoset.photo;
+
+                console.log(`Got ${photos.length} new photos`);
 
                 photos.forEach(
                   (photo: {
@@ -86,64 +76,57 @@ exports.scheduledFunction = functions.pubsub
                   heading: title,
                   url: urls,
                 });
-
-                count += 1;
-
-                if (count === photosets.length) {
-                  deleteApp(app);
-                }
               });
           }
         });
       });
+
+    return { success: true };
   });
 
 admin.initializeApp(functions.config().firebase);
 
-
-// const payload = (title: string, val: string, sender: string) => ({
-//   notification: {
-//     title: title,
-//     body: val,
-//   },
-//   data: {
-//     sender: sender,
-//   },
-// });
+const payload = (title: string, val: string, sender: string) => ({
+  notification: {
+    title: title,
+    body: val,
+  },
+  data: {
+    sender: sender,
+  },
+});
 
 export const onCreateMessage = functions.firestore
-  .document("/images/{documentName}")
+  .document('/images/{documentName}')
   .onCreate((snapshot, context) => {
-
     const documentName = context.params.documentName;
 
     console.log(`New photoset ${documentName}`);
-    return;
 
-  //   return admin.database()
-  //       .ref(`/fcmTokens/${messageData.toUser}`)
-  //       .once("value")
-  //       .then((FCMToken) => {
-  //         const msgPayload = payload(
-  //             messageData.username,
-  //             messageData.message,
-  //             messageData.idUser,
-  //         );
+    return admin
+      .firestore()
+      .collection('/fcmTokens')
+      .get()
+      .then((tokens) => {
+        const msgPayload = payload(documentName, documentName, documentName);
 
-  //         console.log(FCMToken.val().token);
-  //         console.log("Sending message");
+        const options = {
+          priority: 'high',
+        };
 
-  //         const options = {
-  //           priority: "high",
-  //         };
+        console.log('Sending message');
 
-  //         admin.messaging()
-  //             .sendToDevice([FCMToken.val().token], msgPayload, options)
-  //             .then((response) => {
-  //               console.log("Successfully sent message:", response);
-  //               return {success: true};
-  //             }).catch((error) => {
-  //               return {error: error.code};
-  //             });
-  //       });
+        tokens.forEach((token) =>
+          admin
+            .messaging()
+            .sendToDevice([token.data().token], msgPayload, options)
+            .then((response) => {
+              console.log('Successfully sent message:', response);
+              return { success: true };
+            })
+            .catch((error) => {
+              return { error: error.code };
+            }),
+        );
+      });
   });

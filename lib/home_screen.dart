@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mysample/utils.dart';
@@ -10,7 +8,6 @@ import 'image_full_screen.dart';
 import 'models/images.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:dio/dio.dart';
 
@@ -36,6 +33,7 @@ class _MainScreenState extends State<MainScreen> {
 
     if (firstLaunch) {
       storage.delete(key: "saved");
+      await setUserToken();
     } else {
       var data = await storage.read(key: "saved");
       if (data != null) savedUrls = jsonDecode(data);
@@ -82,63 +80,61 @@ class _MainScreenState extends State<MainScreen> {
     final images = data.url;
     return Column(children: [
       Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0),
-        child: CarouselSlider(
-          options: CarouselOptions(
-            aspectRatio: 2,
-            enlargeCenterPage: true,
-            initialPage: 2,
-          ),
-          items: images.map<Widget>((item) {
+        padding: const EdgeInsets.all(6.0),
+        child: Column(
+          children: images.map<Widget>((item) {
             final splitValues = item.split('t1t11e');
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  if (showMenu == true) {
-                    showMenu = false;
-                  } else {
-                    url = splitValues[1];
-                    title = splitValues[0];
-                  }
-                });
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                child: Stack(
-                  children: <Widget>[
-                    Image.network(
-                      splitValues[1],
-                      fit: BoxFit.cover,
-                      width: 400.0,
-                    ),
-                    Positioned(
-                      bottom: 0.0,
-                      left: 0.0,
-                      right: 0.0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.fromARGB(200, 0, 0, 0),
-                              Color.fromARGB(0, 0, 0, 0)
-                            ],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    if (showMenu == true) {
+                      showMenu = false;
+                    } else {
+                      url = splitValues[1];
+                      title = splitValues[0];
+                    }
+                  });
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  child: Stack(
+                    children: <Widget>[
+                      Image.network(
+                        splitValues[1],
+                        fit: BoxFit.cover,
+                        width: 400.0,
+                      ),
+                      Positioned(
+                        bottom: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(200, 0, 0, 0),
+                                Color.fromARGB(0, 0, 0, 0)
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
                           ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        child: Text(
-                          splitValues[0],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 20.0),
+                          child: Text(
+                            splitValues[0],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -201,7 +197,7 @@ class _MainScreenState extends State<MainScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "NASA IMAGE APP",
+                "JWST",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: showMenu ? 24 : 0,

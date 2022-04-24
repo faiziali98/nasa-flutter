@@ -1,8 +1,10 @@
 import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 extension AppLaunch on SharedPreferences {
   static const _firstLaunchKey = 'firstLaunch';
@@ -66,3 +68,8 @@ const gradient = LinearGradient(
     Color.fromARGB(255, 14, 39, 71),
   ],
 );
+
+Future<void> setUserToken() async {
+  String? token = await FirebaseMessaging.instance.getToken();
+  FirebaseFirestore.instance.collection('fcmTokens').add({'token': token});
+}

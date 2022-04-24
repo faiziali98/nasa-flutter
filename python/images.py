@@ -17,7 +17,7 @@ sets   = flickr.photosets.getList(user_id='50785054@N03')
 
 flickr = flickrapi.FlickrAPI(api_key, api_secret)
 
-for photoset in sets["photosets"]["photoset"][0:2]:
+for photoset in sets["photosets"]["photoset"][2:3]:
     urls = []
     title = photoset['title']['_content']
     for photo in flickr.walk_set(photoset['id']):
