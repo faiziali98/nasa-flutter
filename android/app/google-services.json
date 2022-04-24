@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "583265588703",
+    "project_id": "jwst-7a859",
+    "storage_bucket": "jwst-7a859.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583265588703:android:1ad93e2179229a21ada06a",
+        "android_client_info": {
+          "package_name": "com.dovi.jwst"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "583265588703-0ksd8n5ktkvqitenhh6dcedir8hem8o5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRL4upcmK1y2-NGz66hD7EOx2zN1qkqX4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "583265588703-0ksd8n5ktkvqitenhh6dcedir8hem8o5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "583265588703-iarahb3p9pjf952i5bos1q1tpv5d5hnn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dovi.jwst"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

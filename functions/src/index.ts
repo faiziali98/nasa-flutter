@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import * as admin from "firebase-admin";
 import { initializeApp, deleteApp } from 'firebase/app';
 import { doc, setDoc, getFirestore, getDoc } from 'firebase/firestore';
 
@@ -95,4 +96,54 @@ exports.scheduledFunction = functions.pubsub
           }
         });
       });
+  });
+
+admin.initializeApp(functions.config().firebase);
+
+
+// const payload = (title: string, val: string, sender: string) => ({
+//   notification: {
+//     title: title,
+//     body: val,
+//   },
+//   data: {
+//     sender: sender,
+//   },
+// });
+
+export const onCreateMessage = functions.firestore
+  .document("/images/{documentName}")
+  .onCreate((snapshot, context) => {
+
+    const documentName = context.params.documentName;
+
+    console.log(`New photoset ${documentName}`);
+    return;
+
+  //   return admin.database()
+  //       .ref(`/fcmTokens/${messageData.toUser}`)
+  //       .once("value")
+  //       .then((FCMToken) => {
+  //         const msgPayload = payload(
+  //             messageData.username,
+  //             messageData.message,
+  //             messageData.idUser,
+  //         );
+
+  //         console.log(FCMToken.val().token);
+  //         console.log("Sending message");
+
+  //         const options = {
+  //           priority: "high",
+  //         };
+
+  //         admin.messaging()
+  //             .sendToDevice([FCMToken.val().token], msgPayload, options)
+  //             .then((response) => {
+  //               console.log("Successfully sent message:", response);
+  //               return {success: true};
+  //             }).catch((error) => {
+  //               return {error: error.code};
+  //             });
+  //       });
   });

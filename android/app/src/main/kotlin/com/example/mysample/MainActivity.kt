@@ -1,4 +1,4 @@
-package com.example.mysample
+package com.dovi.jwst
 
 import io.flutter.embedding.android.FlutterActivity
 
