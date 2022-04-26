@@ -34,34 +34,35 @@ class _AllImagesScreen extends State<AllImagesScreen> {
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
           crossAxisCount: 3,
-          children: widget.savedUrls
-              .map<Widget>(
-                (item) => InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ImageFullScreenWidget(
-                          url: item,
-                        ),
+          children: widget.savedUrls.map<Widget>(
+            (item) {
+              final splitValues = item.split('t1t11e');
+              return InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ImageFullScreenWidget(
+                        url: item,
                       ),
-                    );
-                  },
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                    child: Stack(
-                      children: <Widget>[
-                        Image.network(
-                          item,
-                          fit: BoxFit.cover,
-                          height: 100.0,
-                          width: double.infinity,
-                        ),
-                      ],
                     ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                  child: Stack(
+                    children: <Widget>[
+                      Image.network(
+                        splitValues[1],
+                        fit: BoxFit.cover,
+                        height: 100.0,
+                        width: double.infinity,
+                      ),
+                    ],
                   ),
                 ),
-              )
-              .toList(),
+              );
+            },
+          ).toList(),
         ),
       ),
     );
