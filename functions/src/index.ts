@@ -16,7 +16,7 @@ const firebaseConfig = {
 };
 
 exports.scheduledFunction = functions.pubsub
-  .schedule('every 24 hours')
+  .schedule('every 1 minutes')
   .onRun((context) => {
     const app = initializeApp(firebaseConfig);
     const database = getFirestore(app);
@@ -53,16 +53,16 @@ exports.scheduledFunction = functions.pubsub
 
                 photos.forEach(
                   (photo: {
-                    server: any;
-                    id: any;
-                    secret: any;
-                    title: any;
+                    server: any,
+                    id: any,
+                    secret: any,
+                    title: any,
                   }) => {
                     const server = photo.server;
                     const ph_id = photo.id;
                     const ph_scr = photo.secret;
-                    const title = photo.title;
-                    const url = `${title}t1t11ehttps://live.staticflickr.com/${server}/${ph_id}_${ph_scr}.jpg`;
+                    const ph_title = photo.title;
+                    const url = `${ph_title}t1t11ehttps://live.staticflickr.com/${server}/${ph_id}_${ph_scr}.jpg`;
                     urls.push(url);
                   },
                 );
@@ -108,7 +108,11 @@ export const onCreateMessage = functions.firestore
       .collection('/fcmTokens')
       .get()
       .then((tokens) => {
-        const msgPayload = payload(documentName, documentName, documentName);
+        const msgPayload = payload(
+          'New Images Available',
+          documentName,
+          documentName,
+        );
 
         const options = {
           priority: 'high',
@@ -116,17 +120,19 @@ export const onCreateMessage = functions.firestore
 
         console.log('Sending message');
 
-        tokens.forEach((token) =>
-          admin
-            .messaging()
-            .sendToDevice([token.data().token], msgPayload, options)
-            .then((response) => {
-              console.log('Successfully sent message:', response);
-              return { success: true };
-            })
-            .catch((error) => {
-              return { error: error.code };
-            }),
-        );
+        tokens.forEach((token) => {
+          if (token.data().sendNotification) {
+            admin
+              .messaging()
+              .sendToDevice([token.data().token], msgPayload, options)
+              .then((response) => {
+                console.log('Successfully sent message:', response);
+                return { success: true };
+              })
+              .catch((error) => {
+                return { error: error.code };
+              });
+          }
+        });
       });
   });

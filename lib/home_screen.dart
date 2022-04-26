@@ -24,20 +24,31 @@ class _MainScreenState extends State<MainScreen> {
   bool showMenu = false;
   FToast fToast = FToast();
   List<dynamic> savedUrls = [];
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  bool isSwitched = false;
+  String tokenId = '';
   final storage = const FlutterSecureStorage();
+  var allImagesUrls = [];
 
   void initStore() async {
     final firstLaunch = await AppLaunch.isFirstLaunch();
 
     if (firstLaunch) {
       storage.delete(key: "saved");
-      await setUserToken();
+      storage.delete(key: "isSwitched");
+      tokenId = await setUserToken();
+      storage.write(
+        key: "tokenId",
+        value: tokenId,
+      );
     } else {
       var data = await storage.read(key: "saved");
+      String? isSwitchedSaved = await storage.read(key: "isSwitched");
+      String? savedtTokenId = await storage.read(key: "tokenId");
       if (data != null) savedUrls = jsonDecode(data);
-      print(savedUrls);
+      if (savedtTokenId != null) tokenId = savedtTokenId;
+      if (isSwitchedSaved != null) {
+        isSwitched = isSwitchedSaved == 'true' ? true : false;
+      }
     }
   }
 
@@ -46,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     fToast.init(context);
     initStore();
-    // requestPermission();
+    requestPermission();
   }
 
   _asyncMethod() async {
@@ -76,69 +87,74 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _imageItem(data) {
+  List<Widget> getImagesItems(images) {
+    return images.map<Widget>((item) {
+      final splitValues = item.split('t1t11e');
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6.0),
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              if (showMenu == true) {
+                showMenu = false;
+              } else {
+                url = splitValues[1];
+                title = splitValues[0];
+              }
+            });
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            child: Stack(
+              children: <Widget>[
+                Image.network(
+                  splitValues[1],
+                  fit: BoxFit.cover,
+                  width: 400.0,
+                ),
+                Positioned(
+                  bottom: 0.0,
+                  left: 0.0,
+                  right: 0.0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color.fromARGB(200, 0, 0, 0),
+                          Color.fromARGB(0, 0, 0, 0)
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 20.0),
+                    child: Text(
+                      splitValues[0],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }).toList();
+  }
+
+  Widget _imageItemList(data) {
     final images = data.url;
+    final childrenImages = getImagesItems(images);
     return Column(children: [
       Padding(
         padding: const EdgeInsets.all(6.0),
         child: Column(
-          children: images.map<Widget>((item) {
-            final splitValues = item.split('t1t11e');
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    if (showMenu == true) {
-                      showMenu = false;
-                    } else {
-                      url = splitValues[1];
-                      title = splitValues[0];
-                    }
-                  });
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  child: Stack(
-                    children: <Widget>[
-                      Image.network(
-                        splitValues[1],
-                        fit: BoxFit.cover,
-                        width: 400.0,
-                      ),
-                      Positioned(
-                        bottom: 0.0,
-                        left: 0.0,
-                        right: 0.0,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color.fromARGB(200, 0, 0, 0),
-                                Color.fromARGB(0, 0, 0, 0)
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 20.0),
-                          child: Text(
-                            splitValues[0],
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
+          children: childrenImages,
         ),
       ),
     ]);
@@ -171,11 +187,19 @@ class _MainScreenState extends State<MainScreen> {
                 }
 
                 final data = snapshot.requireData.docs;
+                final dataUrls =
+                    data.map((ele) => ele.data().url).toList().forEach(
+                  (e) {
+                    final toAdd =
+                        e.map((val) => val.split('t1t11e')[1]).toList();
+                    allImagesUrls.addAll(toAdd);
+                  },
+                );
 
                 return ListView.builder(
                   itemCount: data.length,
                   itemBuilder: (context, index) {
-                    return _imageItem(
+                    return _imageItemList(
                       data[index].data(),
                     );
                   },
@@ -210,6 +234,39 @@ class _MainScreenState extends State<MainScreen> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
+                    builder: (context) =>
+                        AllImagesScreen(savedUrls: allImagesUrls),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.grid_on,
+                      color: Colors.white,
+                    ),
+                    Container(
+                      width: 8,
+                    ),
+                    Text(
+                      "All Images",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: showMenu ? 20 : 0,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
                     builder: (context) => AllImagesScreen(savedUrls: savedUrls),
                   ),
                 );
@@ -236,6 +293,45 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ],
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Notifications",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: showMenu ? 20 : 0,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Container(
+                    width: 8,
+                  ),
+                  Switch(
+                    value: isSwitched,
+                    onChanged: (value) {
+                      setState(() {
+                        isSwitched = value;
+                        storage.write(
+                          key: "isSwitched",
+                          value: isSwitched.toString(),
+                        );
+                        FirebaseFirestore.instance
+                            .collection('fcmTokens')
+                            .doc(tokenId)
+                            .update({'sendNotification': isSwitched});
+                      });
+                    },
+                    activeTrackColor: Colors.lightGreenAccent,
+                    activeColor: Colors.green,
+                    inactiveTrackColor: Colors.grey[350],
+                  ),
+                ],
               ),
             ),
           ],
@@ -377,7 +473,6 @@ class _MainScreenState extends State<MainScreen> {
     ];
 
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {

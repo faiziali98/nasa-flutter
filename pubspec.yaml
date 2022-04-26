@@ -52,6 +52,7 @@ dependencies:
   notification_permissions: ^0.6.1
   flutter_local_notifications: ^9.4.1
   flutter_launcher_icons: ^0.9.2
+  toggle_switch: ^2.0.1
 
 flutter_icons:
   android: true

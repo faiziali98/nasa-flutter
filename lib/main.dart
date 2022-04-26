@@ -31,6 +31,7 @@ Future<String> getCheckNotificationPermStatus() {
 }
 
 Future<void> backgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
   print(message.data.toString());
   print(message.notification!.title);
 }

@@ -69,7 +69,14 @@ const gradient = LinearGradient(
   ],
 );
 
-Future<void> setUserToken() async {
+Future<String> setUserToken() async {
   String? token = await FirebaseMessaging.instance.getToken();
-  FirebaseFirestore.instance.collection('fcmTokens').add({'token': token});
+  var tokenDocument =
+      await FirebaseFirestore.instance.collection('fcmTokens').add(
+    {
+      'token': token,
+      'sendNotification': true,
+    },
+  );
+  return tokenDocument.id;
 }
