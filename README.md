@@ -1,16 +1,44 @@
-# mysample
+# JWST:
 
-A new Flutter project.
+This repository contains all the files for the application.
 
-## Getting Started
+## Mobile Application:
 
-This project is a starting point for a Flutter application.
+### lib: Contians Flutter code.
+### Android: Contains Android files.
+### iOS: Contains iOS application files.
 
-A few resources to get you started if this is your first Flutter project:
+## Python Script:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Python script is available in `python` directory.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### How to use?
+
+From project root, use following commands.
+
+```
+cd python
+python images.py
+```
+
+### Note: You require python 3.7 or above for this. Also, you will have to install all the dependency yourself.
+
+## Cloud Functions:
+
+All the cloud functions are written in `Typescript` and are available in `functions/src/index.ts` file. The necessary files are availble in `functions/src` folder.
+
+### How to use?
+
+To deploy the cloud function, use following commands. (From project root).
+
+```
+cd functions
+firebase login
+firebase deploy
+```
+
+### Note: you will have to install firebase tools using link: https://firebase.google.com/docs/cli#windows-npm
+
+
+
+
