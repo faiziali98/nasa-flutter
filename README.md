@@ -21,7 +21,7 @@ cd python
 python images.py
 ```
 
-### Note: You require python 3.7 or above for this. Also, you will have to install all the dependency yourself.
+#### Note: You require python 3.7 or above for this. Also, you will have to install all the dependency yourself.
 
 ## Cloud Functions:
 
@@ -37,7 +37,7 @@ firebase login
 firebase deploy
 ```
 
-### Note: you will have to install firebase tools using link: https://firebase.google.com/docs/cli#windows-npm
+#### Note: you will have to install firebase tools using link: https://firebase.google.com/docs/cli#windows-npm
 
 
 
